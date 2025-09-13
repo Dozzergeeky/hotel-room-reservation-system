@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Clock, Users, Building2, CheckCircle } from 'lucide-react';
+import { Header } from '@/components/header';
 
 export default function HotelReservation() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [inputRooms, setInputRooms] = useState<string>('');
   const [lastBooking, setLastBooking] = useState<{rooms: Room[], totalTravelTime: number} | null>(null);
 
-  // Initialize rooms on component mount
   useEffect(() => {
     setRooms(generateAllRooms());
   }, []);
@@ -35,7 +35,6 @@ export default function HotelReservation() {
       return;
     }
 
-    // Mark rooms as occupied
     const updatedRooms = rooms.map(room => {
       const isBooked = booking.rooms.some(bookedRoom => bookedRoom.id === room.id);
       return isBooked ? { ...room, isOccupied: true } : room;
@@ -49,7 +48,7 @@ export default function HotelReservation() {
   const handleRandomOccupancy = () => {
     const updatedRooms = rooms.map(room => ({
       ...room,
-      isOccupied: Math.random() < 0.3 // 30% chance of being occupied
+      isOccupied: Math.random() < 0.3
     }));
     setRooms(updatedRooms);
     setLastBooking(null);
@@ -63,40 +62,50 @@ export default function HotelReservation() {
 
   const getRoomColor = (room: Room) => {
     if (lastBooking?.rooms.some(br => br.id === room.id)) {
-      return 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-400 shadow-lg';
+      return 'bg-blue-500 dark:bg-blue-600 text-white border-blue-400 dark:border-blue-500';
     } else if (room.isOccupied) {
-      return 'bg-gradient-to-br from-red-500 to-red-600 text-white border-red-400';
+      return 'bg-red-100 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400';
     } else {
-      return 'bg-gradient-to-br from-green-400 to-green-500 text-gray-800 border-green-300 hover:shadow-md';
+      return 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/20';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            🏨 Hotel Room Reservation System
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Smart room allocation system with travel time optimization across 97 rooms
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
+      <Header />
+
+      <main className="container max-w-7xl mx-auto py-12 px-4 space-y-8">
+        <div className="text-center space-y-4 pb-8">
+          <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+            Smart Room Allocation
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Optimize travel time with intelligent room booking across 10 floors
           </p>
         </div>
 
-        {/* Controls */}
-        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-2xl text-center">Booking Controls</CardTitle>
-            <CardDescription className="text-center">
-              Enter the number of rooms you want to book (maximum 5 rooms per booking)
-            </CardDescription>
+        <Card className="max-w-4xl mx-auto bg-white dark:bg-gray-950 border-gray-200 dark:border-gray-800 shadow-sm">
+          <CardHeader className="pb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                  Room Selection
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">
+                  Select the number of rooms you&apos;d like to book (1-5 rooms maximum)
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="bg-gray-50 dark:bg-gray-900/50">
+                <Users className="w-4 h-4 mr-1" />
+                {rooms.filter(r => r.isOccupied).length}/97 occupied
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <div className="flex items-center gap-3">
-                <label htmlFor="roomCount" className="text-lg font-medium whitespace-nowrap">
-                  Number of Rooms:
+                <label htmlFor="roomCount" className="font-medium text-gray-900 dark:text-gray-100">
+                  Rooms:
                 </label>
                 <Input
                   id="roomCount"
@@ -105,47 +114,47 @@ export default function HotelReservation() {
                   max="5"
                   value={inputRooms}
                   onChange={(e) => setInputRooms(e.target.value)}
-                  className="w-20 text-center font-semibold border-2 border-gray-200"
+                  className="w-20 text-center border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-950"
                   placeholder="1-5"
                 />
               </div>
               <div className="flex gap-3">
                 <Button
                   onClick={handleBookRooms}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-2 shadow-lg hover:shadow-xl transition-all duration-200"
-                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                  size="sm"
                 >
-                  📍 Book Rooms
+                  Book Rooms
                 </Button>
                 <Button
                   onClick={handleRandomOccupancy}
                   variant="outline"
-                  className="font-semibold px-6 border-2 hover:bg-orange-50 hover:border-orange-300 transition-all duration-200"
+                  size="sm"
+                  className="border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50"
                 >
-                  🎲 Random Occupancy
+                  Random
                 </Button>
                 <Button
                   onClick={handleReset}
-                  variant="destructive"
-                  className="font-semibold px-6 shadow-lg hover:shadow-xl transition-all duration-200"
+                  variant="outline"
+                  size="sm"
+                  className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                 >
-                  🔄 Reset All
+                  Reset
                 </Button>
               </div>
             </div>
 
             {lastBooking && (
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                 <div className="flex items-center gap-3">
-                  <div className="text-2xl">✅</div>
+                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
                   <div>
-                    <div className="font-bold text-lg text-green-800">
-                      Booking Confirmed!
+                    <div className="font-medium text-green-900 dark:text-green-100">
+                      Booking confirmed
                     </div>
-                    <div className="text-gray-700">
-                      <span className="font-medium">Rooms:</span> {lastBooking.rooms.map(r => r.id).join(', ')}
-                      <span className="mx-2">•</span>
-                      <span className="font-medium">Total Travel Time:</span> {lastBooking.totalTravelTime} minutes
+                    <div className="text-sm text-green-700 dark:text-green-300">
+                      Rooms: {lastBooking.rooms.map(r => r.id).join(', ')} • {lastBooking.totalTravelTime} min travel
                     </div>
                   </div>
                 </div>
@@ -154,70 +163,82 @@ export default function HotelReservation() {
           </CardContent>
         </Card>
 
-        {/* Hotel Layout */}
-        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
-              🏢 Hotel Floor Plan
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                {rooms.filter(r => r.isOccupied).length}/97 Occupied
-              </Badge>
-            </CardTitle>
-            <CardDescription className="text-center">
-              10 floors with staircase and elevator on the left side • Travel: 1 min (horizontal) • 2 min (vertical)
-            </CardDescription>
+        <Card className="bg-white dark:bg-gray-950 border-gray-200 dark:border-gray-800 shadow-sm">
+          <CardHeader className="pb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <Building2 className="w-5 h-5" />
+                  Hotel Layout
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">
+                  97 rooms across 10 floors with elevator and stairs on the left side
+                </CardDescription>
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                1 min (adjacent) • 2 min (floor)
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Staircase/Lift Indicator */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 flex flex-col items-center p-4 bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg shadow-md">
+          <CardContent>
+            <div className="flex items-center gap-6 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
                 <div className="text-2xl mb-1">🛗</div>
-                <div className="text-xs font-bold text-center text-gray-700">
-                  ELEVATOR<br/>&<br/>STAIRS
+                <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                  ELEVATOR
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-500">
+                  STAIRS
                 </div>
               </div>
-              <Separator orientation="vertical" className="h-12" />
-              <div className="text-sm text-gray-600">
-                <div><strong>Travel Rules:</strong></div>
-                <div>• Move between adjacent rooms: <em>1 minute</em></div>
-                <div>• Move between floors: <em>2 minutes</em></div>
+              <div className="flex-1">
+                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                  <div className="font-medium">Travel time rules:</div>
+                  <div className="flex gap-4 text-xs">
+                    <span>Horizontal: 1 minute between adjacent rooms</span>
+                    <span>Vertical: 2 minutes between floors</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Floors */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               {Array.from({length: 10}, (_, i) => i + 1).reverse().map(floor => {
                 const roomsOnFloor = rooms.filter(room => room.floor === floor);
                 const roomsPerFloor = floor === 10 ? 7 : 10;
                 const availableRooms = roomsOnFloor.filter(r => !r.isOccupied).length;
 
                 return (
-                  <div key={floor} className="border rounded-lg p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-bold text-gray-800">
-                          Floor {floor}
-                        </h3>
-                        <Badge variant={availableRooms > 0 ? "secondary" : "destructive"} className="text-xs">
-                          {availableRooms} available
-                        </Badge>
+                  <div
+                    key={floor}
+                    className="p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/80 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                        Floor {floor}
                       </div>
+                      <Badge variant="secondary" className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                        {availableRooms}/{roomsPerFloor} available
+                      </Badge>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-10 gap-1">
                       {Array.from({length: roomsPerFloor}, (_, i) => {
                         const room = roomsOnFloor.find(r => r.position === i + 1);
-                        if (!room) return null;
+                        if (!room) return (
+                          <div
+                            key={`empty-${i}`}
+                            className="aspect-square rounded border-2 border-dashed border-gray-300 dark:border-gray-600"
+                          />
+                        );
 
                         return (
                           <div
                             key={room.id}
-                            className={`flex-1 p-3 rounded-lg border-2 text-xs font-bold text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] ${getRoomColor(room)}`}
+                            className={`aspect-square rounded border-2 text-xs font-medium flex items-center justify-center cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-200 ${getRoomColor(room)}`}
                             title={`Room ${room.id} - ${room.isOccupied ? 'Occupied' : 'Available'}`}
                           >
-                            <div className="text-lg mb-1">
-                              {lastBooking?.rooms.some(br => br.id === room.id) ? '✨' : room.isOccupied ? '🚫' : '🛏️'}
-                            </div>
-                            {room.id}
+                            {room.position.toString().padStart(2, '0')}
                           </div>
                         );
                       })}
@@ -227,27 +248,33 @@ export default function HotelReservation() {
               })}
             </div>
 
-            {/* Legend */}
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-              <h4 className="text-lg font-semibold mb-3 text-center">Room Status Legend</h4>
-              <div className="flex flex-wrap justify-center gap-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gradient-to-br from-green-400 to-green-500 border rounded-md"></div>
-                  <span className="font-medium">Available</span>
+            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+              <div className="flex flex-wrap justify-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10"></div>
+                  <span className="text-gray-600 dark:text-gray-400">Available</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gradient-to-br from-red-500 to-red-600 border rounded-md"></div>
-                  <span className="font-medium">Occupied</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border-2 border-red-200 dark:border-red-800 bg-red-100 dark:bg-red-900/20"></div>
+                  <span className="text-gray-600 dark:text-gray-400">Occupied</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 border rounded-md shadow-lg"></div>
-                  <span className="font-medium">Just Booked</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border-2 border-blue-400 dark:border-blue-500 bg-blue-500 dark:bg-blue-600"></div>
+                  <span className="text-gray-600 dark:text-gray-400">Just booked</span>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
-      </div>
+      </main>
+
+      <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black py-12 mt-16">
+        <div className="container max-w-4xl mx-auto px-4 text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Hotel Reservation System • Optimized for travel time minimization
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
